@@ -4,120 +4,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <link href="https://db.onlinewebfonts.com/c/2c8b7b9e605950d44bbcb64eef38f456?family=OCR-B" rel="stylesheet"> -->
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-label-recognizer@2.2.31/dist/dlr.js"></script>
-    <title>MRZ Generator</title>
-
+    <title>MRZ Generator - Mock Travel Document Generator</title>
 </head>
 
 <body>
     <div id="loading-indicator" class="loading-indicator">
         <div class="spinner"></div>
     </div>
-    <div class="container">
-        <div class="row">
-            <div>
-                <select onchange="selectChanged()" id="dropdown">
-                    <option value="Passport(TD3)">Passport(TD3)</option>
-                    <option value="ID Card(TD1)">ID Card(TD1)</option>
-                    <option value="ID Card(TD2)">ID Card(TD2)</option>
-                    <option value="Visa(A)">Visa(A)</option>
-                    <option value="Visa(B)">Visa(B)</option>
-                </select>
-            </div>
-        </div>
-        <div class="row">
-            <div>
-                <label for="docType">Document type</label>
-                <input type="text" id="document_type_txt" placeholder="P">
-            </div>
-            <div>
-                <label for="birthDate">Birth date</label>
-                <input type="text" id="birth_date_txt" placeholder="210118">
-            </div>
-            <div>
-                <label for="nationality">Nationality</label>
-                <input type="text" id="nationality_txt" placeholder="GBR">
-            </div>
-        </div>
 
-        <div class="row">
-            <div>
-                <label for="country">Country</label>
-                <input type="text" id="country_code_txt" placeholder="GBR">
-            </div>
-            <div>
-                <label for="sex">Sex</label>
-                <input type="text" id="sex_txt" placeholder="F">
-            </div>
-            <div>
-                <label for="surname">Surname</label>
-                <input type="text" id="surname_txt" placeholder="SXNGND">
-            </div>
-        </div>
-
-        <div class="row">
-            <div>
-                <label for="docNumber">Document number</label>
-                <input type="text" id="document_number_txt" placeholder="K1RELFC7">
-            </div>
-            <div>
-                <label for="expiryDate">Expiry date</label>
-                <input type="text" id="expiry_date_txt" placeholder="240710">
-            </div>
-            <div>
-                <label for="givenNames">Given names</label>
-                <input type="text" id="given_names_txt" placeholder="MGGPJ">
-            </div>
-        </div>
-
-        <div class="row">
-            <div>
-                <label for="optionalData1">Optional data 1</label>
-                <input type="text" id="optional_data1_txt" placeholder="ZE184226B">
-            </div>
-            <div>
-                <label for="optionalData2">Optional data 2</label>
-                <input type="text" id="optional_data2_txt">
-            </div>
-        </div>
-
-        <div class="row">
-            <div>
-                <button id="randomBtn" onclick="randomize()">Random</button>
-            </div>
-            <div>
-                <button id="generateBtn" onclick="generate()">Generate</button>
-            </div>
-
-        </div>
-
-        <div class="row">
-            <div>
-                <textarea rows="3" cols="50" readonly id="outputMRZ"></textarea>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="image-container">
-                <canvas id="overlay"></canvas>
-            </div>
-        </div>
-
-
-        <div class="row">
-            <div>
-                <button id='recognizeBtn' onclick="recognize()" style="visibility: hidden;">Recognize MRZ</button>
-            </div>
-
-        </div>
-        <div id="mrz-result" class="right-sticky-content"></div>
-
+    <div class="app-header">
+        <h1>🛂 MRZ Generator</h1>
+        <p>Generate mock Machine Readable Zone data for testing</p>
     </div>
 
-    <script src="python.js"></script>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>Document Configuration</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-group full-width">
+                    <label for="dropdown">Document Type</label>
+                    <select onchange="selectChanged()" id="dropdown" class="form-control">
+                        <option value="Passport(TD3)">🛂 Passport (TD3)</option>
+                        <option value="ID Card(TD1)">🪪 ID Card (TD1)</option>
+                        <option value="ID Card(TD2)">🪪 ID Card (TD2)</option>
+                        <option value="Visa(A)">📄 Visa Type A</option>
+                        <option value="Visa(B)">📄 Visa Type B</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="document_type_txt">Document Type Code</label>
+                        <input type="text" id="document_type_txt" class="form-control" placeholder="P" maxlength="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="country_code_txt">Country</label>
+                        <input type="text" id="country_code_txt" class="form-control" placeholder="GBR" maxlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label for="nationality_txt">Nationality</label>
+                        <input type="text" id="nationality_txt" class="form-control" placeholder="GBR" maxlength="3">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="surname_txt">Surname</label>
+                        <input type="text" id="surname_txt" class="form-control" placeholder="SMITH">
+                    </div>
+                    <div class="form-group">
+                        <label for="given_names_txt">Given Names</label>
+                        <input type="text" id="given_names_txt" class="form-control" placeholder="JOHN">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="document_number_txt">Document Number</label>
+                        <input type="text" id="document_number_txt" class="form-control" placeholder="K1RELFC7">
+                    </div>
+                    <div class="form-group">
+                        <label for="sex_txt">Sex</label>
+                        <input type="text" id="sex_txt" class="form-control" placeholder="M" maxlength="1">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="birth_date_txt">Birth Date (YYMMDD)</label>
+                        <input type="text" id="birth_date_txt" class="form-control" placeholder="900115" maxlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="expiry_date_txt">Expiry Date (YYMMDD)</label>
+                        <input type="text" id="expiry_date_txt" class="form-control" placeholder="300115" maxlength="6">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="optional_data1_txt">Optional Data 1</label>
+                        <input type="text" id="optional_data1_txt" class="form-control" placeholder="ZE184226B">
+                    </div>
+                    <div class="form-group">
+                        <label for="optional_data2_txt">Optional Data 2</label>
+                        <input type="text" id="optional_data2_txt" class="form-control" placeholder="Optional">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="randomBtn" onclick="randomize()" class="btn btn-secondary">
+                        🎲 Random Data
+                    </button>
+                    <button id="generateBtn" onclick="generate()" class="btn btn-primary">
+                        ✨ Generate MRZ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Generated MRZ Code</h2>
+            </div>
+            <div class="card-body">
+                <textarea rows="3" readonly id="outputMRZ" class="mrz-output"
+                    placeholder="Generated MRZ will appear here..."></textarea>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Document Preview</h2>
+            </div>
+            <div class="card-body">
+                <div class="canvas-wrapper">
+                    <canvas id="overlay"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="app-footer">
+        <p>⚠️ For testing purposes only - Not valid travel documents</p>
+    </footer>
+
+    <!-- Load MRZ Generator library first -->
+    <script src="mrz-generator.js"></script>
+    <!-- Load main application code -->
+    <script src="app.js"></script>
 </body>
 
 </html>
