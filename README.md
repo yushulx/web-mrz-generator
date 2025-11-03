@@ -2,6 +2,11 @@
 
 This is a pure JavaScript implementation of the MRZ (Machine Readable Zone) generator for creating mock travel documents for testing purposes.
 
+<img width="600px" alt="Mock MRZ images" src="https://github.com/user-attachments/assets/e2bfd780-ad49-4d68-8769-14e916c99435" />
+
+## Online Demo
+https://yushulx.me/web-mrz-generator/
+
 ## Features
 
 - **Pure JavaScript**
