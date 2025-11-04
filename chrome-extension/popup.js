@@ -1,23 +1,24 @@
-// DOM Elements
-let dropdown = document.getElementById("dropdown");
-let document_type_txt = document.getElementById("document_type_txt");
-let country_code_txt = document.getElementById("country_code_txt");
-let birth_date_txt = document.getElementById("birth_date_txt");
-let document_number_txt = document.getElementById("document_number_txt");
-let sex_txt = document.getElementById('sex_txt');
-let expiry_date_txt = document.getElementById('expiry_date_txt');
-let nationality_txt = document.getElementById('nationality_txt');
-let surname_txt = document.getElementById('surname_txt');
-let given_names_txt = document.getElementById('given_names_txt');
-let optional_data1_txt = document.getElementById('optional_data1_txt');
-let optional_data2_txt = document.getElementById('optional_data2_txt');
-
-const VALID_COUNTRY_CODES = ['USA', 'CAN', 'GBR', 'AUS', 'FRA', 'CHN', 'IND', 'BRA', 'JPN', 'ZAF', 'RUS', 'MEX', 'ITA', 'ESP', 'NLD', 'SWE', 'ARG', 'BEL', 'CHE'];
-
+// Global variables
 let dataFromGenerator = '';
 let lines = [];
 
-// Utility Functions
+// DOM Elements (will be initialized after DOM loads)
+let dropdown;
+let document_type_txt;
+let country_code_txt;
+let birth_date_txt;
+let document_number_txt;
+let sex_txt;
+let expiry_date_txt;
+let nationality_txt;
+let surname_txt;
+let given_names_txt;
+let optional_data1_txt;
+let optional_data2_txt;
+
+const VALID_COUNTRY_CODES = ['USA', 'CAN', 'GBR', 'AUS', 'FRA', 'CHN', 'IND', 'BRA', 'JPN', 'ZAF', 'RUS', 'MEX', 'ITA', 'ESP', 'NLD', 'SWE', 'ARG', 'BEL', 'CHE'];
+
+// Utility Functions (copied from app.js)
 function randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
@@ -96,26 +97,16 @@ function createRandomData() {
     expiry_date_txt.value = data['Expiry Date'];
 }
 
-// Initialize with default data
-document_type_txt.value = 'P';
-createRandomData();
-
-// Hide loading indicator on page load
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById("loading-indicator").style.display = "none";
-});
-
-// Event Handlers
 function selectChanged() {
-    if (dropdown.value === 'ID Card(TD1)') {
+    if (dropdown.value === 'TD1') {
         document_type_txt.value = 'I';
-    } else if (dropdown.value === 'ID Card(TD2)') {
+    } else if (dropdown.value === 'TD2') {
         document_type_txt.value = 'I';
-    } else if (dropdown.value == 'Passport(TD3)') {
+    } else if (dropdown.value === 'TD3') {
         document_type_txt.value = 'P';
-    } else if (dropdown.value == 'Visa(A)') {
+    } else if (dropdown.value === 'MRVA') {
         document_type_txt.value = 'V';
-    } else if (dropdown.value == 'Visa(B)') {
+    } else if (dropdown.value === 'MRVB') {
         document_type_txt.value = 'V';
     }
 
@@ -132,7 +123,7 @@ function generate() {
     try {
         let generator;
 
-        if (dropdown.value === 'ID Card(TD1)') {
+        if (dropdown.value === 'TD1') {
             generator = new TD1CodeGenerator(
                 document_type_txt.value,
                 country_code_txt.value,
@@ -146,7 +137,7 @@ function generate() {
                 optional_data1_txt.value,
                 optional_data2_txt.value
             );
-        } else if (dropdown.value === 'ID Card(TD2)') {
+        } else if (dropdown.value === 'TD2') {
             generator = new TD2CodeGenerator(
                 document_type_txt.value,
                 country_code_txt.value,
@@ -159,7 +150,7 @@ function generate() {
                 expiry_date_txt.value,
                 optional_data1_txt.value
             );
-        } else if (dropdown.value === 'Passport(TD3)') {
+        } else if (dropdown.value === 'TD3') {
             generator = new TD3CodeGenerator(
                 document_type_txt.value,
                 country_code_txt.value,
@@ -172,7 +163,7 @@ function generate() {
                 expiry_date_txt.value,
                 optional_data1_txt.value
             );
-        } else if (dropdown.value === 'Visa(A)') {
+        } else if (dropdown.value === 'MRVA') {
             generator = new MRVACodeGenerator(
                 document_type_txt.value,
                 country_code_txt.value,
@@ -185,7 +176,7 @@ function generate() {
                 expiry_date_txt.value,
                 optional_data1_txt.value
             );
-        } else if (dropdown.value === 'Visa(B)') {
+        } else if (dropdown.value === 'MRVB') {
             generator = new MRVBCodeGenerator(
                 document_type_txt.value,
                 country_code_txt.value,
@@ -202,6 +193,7 @@ function generate() {
 
         dataFromGenerator = generator.toString();
         document.getElementById("outputMRZ").value = dataFromGenerator;
+        lines = dataFromGenerator.split('\n');
         drawImage();
     } catch (error) {
         console.error('Error generating MRZ:', error);
@@ -209,12 +201,13 @@ function generate() {
     }
 }
 
+// Draw the document image
 function drawImage() {
-    let canvas = document.getElementById("overlay");
-    let ctx = canvas.getContext("2d");
+    const canvas = document.getElementById('overlay');
+    const ctx = canvas.getContext('2d');
 
     // Set canvas dimensions based on document type
-    const isPassport = dropdown.value === 'Passport(TD3)';
+    const isPassport = dropdown.value === 'TD3';
     canvas.width = 900;
     canvas.height = isPassport ? 640 : 580;
 
@@ -285,8 +278,6 @@ function drawImage() {
     ctx.roundRect(docMargin, docMargin, docWidth, docHeight, cornerRadius);
     ctx.stroke();
 
-    lines = dataFromGenerator.split('\n');
-
     // Draw header section (smaller for real passport look)
     const headerHeight = 60;
     const headerGradient = ctx.createLinearGradient(docMargin, docMargin, docMargin + docWidth, docMargin + headerHeight);
@@ -313,9 +304,9 @@ function drawImage() {
     ctx.textAlign = 'left';
     ctx.font = 'bold 24px "Arial"';
     let titleText = '';
-    if (dropdown.value === 'ID Card(TD1)' || dropdown.value === 'ID Card(TD2)') {
+    if (dropdown.value === 'TD1' || dropdown.value === 'TD2') {
         titleText = 'IDENTIFICATION CARD';
-    } else if (dropdown.value === 'Passport(TD3)') {
+    } else if (dropdown.value === 'TD3') {
         titleText = 'PASSPORT';
     } else {
         titleText = 'VISA';
@@ -400,14 +391,19 @@ function drawImage() {
     ctx.fillText(nationality_txt.value, infoX, currentY + 16);
     currentY += fieldGap;
 
+    // Format birth date from YYMMDD to DD.MM.YYYY
     ctx.font = '10px "Arial"';
     ctx.fillStyle = '#64748b';
     ctx.fillText('DATE OF BIRTH', infoX, currentY);
     ctx.font = 'bold 16px "Arial"';
     ctx.fillStyle = '#1e293b';
-    const birthYY = parseInt(birth_date_txt.value.slice(0, 2));
-    const birthFullYear = birthYY > 50 ? `19${birth_date_txt.value.slice(0, 2)}` : `20${birth_date_txt.value.slice(0, 2)}`;
-    ctx.fillText(`${birth_date_txt.value.slice(4, 6)}.${birth_date_txt.value.slice(2, 4)}.${birthFullYear}`, infoX, currentY + 16);
+    if (birth_date_txt.value && birth_date_txt.value.length === 6) {
+        const yy = parseInt(birth_date_txt.value.slice(0, 2));
+        // If year is > 50, it's 19xx, otherwise 20xx (pivot year 2050)
+        const fullYear = yy > 50 ? `19${birth_date_txt.value.slice(0, 2)}` : `20${birth_date_txt.value.slice(0, 2)}`;
+        const birthFormatted = `${birth_date_txt.value.slice(4, 6)}.${birth_date_txt.value.slice(2, 4)}.${fullYear}`;
+        ctx.fillText(birthFormatted, infoX, currentY + 16);
+    }
     currentY += fieldGap;
 
     ctx.font = '10px "Arial"';
@@ -425,9 +421,9 @@ function drawImage() {
     ctx.font = '10px "Arial"';
     ctx.fillStyle = '#64748b';
     let docNumLabel = 'PASSPORT NO.';
-    if (dropdown.value === 'ID Card(TD1)' || dropdown.value === 'ID Card(TD2)') {
+    if (dropdown.value === 'TD1' || dropdown.value === 'TD2') {
         docNumLabel = 'DOCUMENT NO.';
-    } else if (dropdown.value !== 'Passport(TD3)') {
+    } else if (dropdown.value !== 'TD3') {
         docNumLabel = 'VISA NO.';
     }
     ctx.fillText(docNumLabel, infoX2, currentY);
@@ -443,20 +439,28 @@ function drawImage() {
     ctx.font = 'bold 16px "Arial"';
     ctx.fillStyle = '#1e293b';
     // Calculate issue date (expiry - 10 years for example)
-    const expiryYY = parseInt(expiry_date_txt.value.slice(0, 2));
-    const expiryFullYear = expiryYY > 50 ? 1900 + expiryYY : 2000 + expiryYY;
-    const issueYear = expiryFullYear - 10;
-    ctx.fillText(`${expiry_date_txt.value.slice(4, 6)}.${expiry_date_txt.value.slice(2, 4)}.${issueYear}`, infoX2, currentY + 16);
+    if (expiry_date_txt.value && expiry_date_txt.value.length === 6) {
+        const yy = parseInt(expiry_date_txt.value.slice(0, 2));
+        // If year is > 50, it's 19xx, otherwise 20xx (pivot year 2050)
+        const expiryFullYear = yy > 50 ? 1900 + yy : 2000 + yy;
+        const issueYear = expiryFullYear - 10;
+        ctx.fillText(`${expiry_date_txt.value.slice(4, 6)}.${expiry_date_txt.value.slice(2, 4)}.${issueYear}`, infoX2, currentY + 16);
+    }
     currentY += fieldGap;
 
+    // Format expiry date from YYMMDD to DD.MM.YYYY
     ctx.font = '10px "Arial"';
     ctx.fillStyle = '#64748b';
     ctx.fillText('DATE OF EXPIRY', infoX2, currentY);
     ctx.font = 'bold 16px "Arial"';
     ctx.fillStyle = '#1e293b';
-    const expiryYYDisplay = parseInt(expiry_date_txt.value.slice(0, 2));
-    const expiryYearDisplay = expiryYYDisplay > 50 ? `19${expiry_date_txt.value.slice(0, 2)}` : `20${expiry_date_txt.value.slice(0, 2)}`;
-    ctx.fillText(`${expiry_date_txt.value.slice(4, 6)}.${expiry_date_txt.value.slice(2, 4)}.${expiryYearDisplay}`, infoX2, currentY + 16);
+    if (expiry_date_txt.value && expiry_date_txt.value.length === 6) {
+        const yy = parseInt(expiry_date_txt.value.slice(0, 2));
+        // If year is > 50, it's 19xx, otherwise 20xx (pivot year 2050)
+        const fullYear = yy > 50 ? `19${expiry_date_txt.value.slice(0, 2)}` : `20${expiry_date_txt.value.slice(0, 2)}`;
+        const expiryFormatted = `${expiry_date_txt.value.slice(4, 6)}.${expiry_date_txt.value.slice(2, 4)}.${fullYear}`;
+        ctx.fillText(expiryFormatted, infoX2, currentY + 16);
+    }
     currentY += fieldGap;
 
     ctx.font = '10px "Arial"';
@@ -513,7 +517,96 @@ function drawImage() {
     ctx.restore();
 }
 
-// Generate initial MRZ on page load
-window.addEventListener('load', function () {
-    generate();
+// Download image
+function downloadImage() {
+    const canvas = document.getElementById('overlay');
+    canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mrz-document-${Date.now()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showNotification('Image downloaded successfully!');
+    });
+}
+
+// Copy image to clipboard
+async function copyImageToClipboard() {
+    try {
+        const canvas = document.getElementById('overlay');
+        canvas.toBlob(async (blob) => {
+            await navigator.clipboard.write([
+                new ClipboardItem({
+                    'image/png': blob
+                })
+            ]);
+            showNotification('Image copied to clipboard!');
+        });
+    } catch (err) {
+        showNotification('Failed to copy image: ' + err.message, true);
+    }
+}
+
+// Copy MRZ text to clipboard
+async function copyMRZText() {
+    try {
+        const mrzText = document.getElementById('outputMRZ').value;
+        await navigator.clipboard.writeText(mrzText);
+        showNotification('MRZ text copied to clipboard!');
+    } catch (err) {
+        showNotification('Failed to copy text: ' + err.message, true);
+    }
+}
+
+// Show notification
+function showNotification(message, isError = false) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.className = 'notification show' + (isError ? ' error' : '');
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+// Handle document type change
+function handleDocumentTypeChange() {
+    const docType = document.getElementById('document_type').value;
+    const optionalData2Group = document.getElementById('optional_data2_group');
+
+    if (docType === 'TD1') {
+        optionalData2Group.classList.add('show');
+    } else {
+        optionalData2Group.classList.remove('show');
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize global variables
+    dropdown = document.getElementById('document_type');
+    country_code_txt = document.getElementById('country');
+    surname_txt = document.getElementById('surname');
+    given_names_txt = document.getElementById('given_names');
+    document_number_txt = document.getElementById('document_number');
+    nationality_txt = document.getElementById('nationality');
+    birth_date_txt = document.getElementById('date_of_birth');
+    sex_txt = document.getElementById('sex');
+    expiry_date_txt = document.getElementById('date_of_expiry');
+    optional_data1_txt = document.getElementById('optional_data');
+    optional_data2_txt = document.getElementById('optional_data2');
+    document_type_txt = { value: 'P' }; // Create object with value property
+
+    // Event listeners
+    dropdown.addEventListener('change', selectChanged);
+    document.getElementById('randomBtn').addEventListener('click', randomize);
+    document.getElementById('generateBtn').addEventListener('click', generate);
+    document.getElementById('downloadBtn').addEventListener('click', downloadImage);
+    document.getElementById('copyImageBtn').addEventListener('click', copyImageToClipboard);
+    document.getElementById('copyTextBtn').addEventListener('click', copyMRZText);
+
+    // Initialize with random data
+    selectChanged();
 });

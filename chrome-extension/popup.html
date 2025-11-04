@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Extension Locally</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 MRZ Generator</h1>
+            <p>Generate Machine Readable Zone codes</p>
+        </div>
+
+        <div class="form-section">
+            <div class="form-group">
+                <label for="document_type">Document Type:</label>
+                <select id="document_type" class="form-control">
+                    <option value="TD3">TD3 - Passport</option>
+                    <option value="TD2">TD2 - Travel Document</option>
+                    <option value="TD1">TD1 - ID Card</option>
+                    <option value="MRVA">MRVA - Visa Type A</option>
+                    <option value="MRVB">MRVB - Visa Type B</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="country">Issuing Country:</label>
+                    <input type="text" id="country" class="form-control" maxlength="3" placeholder="USA">
+                </div>
+                <div class="form-group">
+                    <label for="nationality">Nationality:</label>
+                    <input type="text" id="nationality" class="form-control" maxlength="3" placeholder="USA">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="surname">Surname:</label>
+                <input type="text" id="surname" class="form-control" placeholder="SMITH">
+            </div>
+
+            <div class="form-group">
+                <label for="given_names">Given Names:</label>
+                <input type="text" id="given_names" class="form-control" placeholder="JOHN">
+            </div>
+
+            <div class="form-group">
+                <label for="document_number">Document Number:</label>
+                <input type="text" id="document_number" class="form-control" placeholder="123456789">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="date_of_birth">Date of Birth (YYMMDD):</label>
+                    <input type="text" id="date_of_birth" class="form-control" placeholder="740812" maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <div class="form-group">
+                    <label for="sex">Sex:</label>
+                    <select id="sex" class="form-control">
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                        <option value="X">Unspecified</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="date_of_expiry">Date of Expiry (YYMMDD):</label>
+                    <input type="text" id="date_of_expiry" class="form-control" placeholder="301231" maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <div class="form-group">
+                    <label for="personal_number">Personal Number:</label>
+                    <input type="text" id="personal_number" class="form-control" placeholder="Optional">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="optional_data">Optional Data:</label>
+                <input type="text" id="optional_data" class="form-control" placeholder="Optional">
+            </div>
+
+            <div class="form-group" id="optional_data2_group">
+                <label for="optional_data2">Optional Data 2 (TD1 only):</label>
+                <input type="text" id="optional_data2" class="form-control" placeholder="Optional">
+            </div>
+
+            <div class="button-group">
+                <button id="randomBtn" class="btn btn-secondary">
+                    🎲 Random Data
+                </button>
+                <button id="generateBtn" class="btn btn-primary">
+                    ⚡ Generate MRZ
+                </button>
+            </div>
+        </div>
+
+        <div class="result-section">
+            <label>Generated MRZ:</label>
+            <textarea id="outputMRZ" class="mrz-output" readonly
+                placeholder="Generated MRZ will appear here..."></textarea>
+        </div>
+
+        <div class="preview-section">
+            <label>Document Preview:</label>
+            <div class="canvas-wrapper">
+                <canvas id="overlay"></canvas>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button id="downloadBtn" class="btn btn-success">
+                💾 Download Image
+            </button>
+            <button id="copyImageBtn" class="btn btn-info">
+                📋 Copy to Clipboard
+            </button>
+            <button id="copyTextBtn" class="btn btn-secondary">
+                📄 Copy MRZ Text
+            </button>
+        </div>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script src="mrz-generator.js"></script>
+    <script src="popup.js"></script>
+</body>
+
+</html>
