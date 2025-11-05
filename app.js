@@ -101,8 +101,19 @@ document_type_txt.value = 'P';
 createRandomData();
 
 // Hide loading indicator on page load
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById("loading-indicator").style.display = "none";
+
+    // Wait for OCR-B font to load before initializing
+    try {
+        await document.fonts.load('16px OCR-B');
+        console.log('✅ OCR-B font loaded');
+    } catch (err) {
+        console.warn('⚠️ Font loading error:', err);
+    }
+
+    // Initialize with default data after font loads
+    selectChanged();
 });
 
 // Event Handlers

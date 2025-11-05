@@ -584,7 +584,7 @@ function handleDocumentTypeChange() {
 }
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Initialize global variables
     dropdown = document.getElementById('document_type');
     country_code_txt = document.getElementById('country');
@@ -599,6 +599,14 @@ document.addEventListener('DOMContentLoaded', () => {
     optional_data2_txt = document.getElementById('optional_data2');
     document_type_txt = { value: 'P' }; // Create object with value property
 
+    // Wait for OCR-B font to load before initializing
+    try {
+        await document.fonts.load('16px OCR-B');
+        console.log('✅ OCR-B font loaded');
+    } catch (err) {
+        console.warn('⚠️ Font loading error:', err);
+    }
+
     // Event listeners
     dropdown.addEventListener('change', selectChanged);
     document.getElementById('randomBtn').addEventListener('click', randomize);
@@ -607,6 +615,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('copyImageBtn').addEventListener('click', copyImageToClipboard);
     document.getElementById('copyTextBtn').addEventListener('click', copyMRZText);
 
-    // Initialize with random data
+    // Initialize with random data (after font is loaded)
     selectChanged();
 });
