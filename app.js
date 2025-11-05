@@ -243,22 +243,68 @@ function drawImage() {
         return truncated + (truncated.length < text.length ? '...' : '');
     }
 
-    // Create gradient background
+    // Get country-specific background colors
+    function getCountryBackground(countryCode) {
+        const backgrounds = {
+            'USA': { colors: ['#b22234', '#3c3b6e', '#ffffff'], pattern: 'stripes' },
+            'CAN': { colors: ['#ff0000', '#ffffff'], pattern: 'simple' },
+            'GBR': { colors: ['#012169', '#C8102E', '#ffffff'], pattern: 'union' },
+            'FRA': { colors: ['#0055a4', '#ffffff', '#ef4135'], pattern: 'vertical' },
+            'DEU': { colors: ['#000000', '#dd0000', '#ffce00'], pattern: 'horizontal' },
+            'CHN': { colors: ['#de2910', '#ffde00'], pattern: 'simple' },
+            'JPN': { colors: ['#bc002d', '#ffffff'], pattern: 'simple' },
+            'AUS': { colors: ['#012169', '#ffffff'], pattern: 'simple' },
+            'IND': { colors: ['#ff9933', '#ffffff', '#138808'], pattern: 'horizontal' },
+            'BRA': { colors: ['#009739', '#fedd00'], pattern: 'simple' },
+            'RUS': { colors: ['#ffffff', '#0039a6', '#d52b1e'], pattern: 'horizontal' },
+            'MEX': { colors: ['#006847', '#ffffff', '#ce1126'], pattern: 'vertical' },
+            'ESP': { colors: ['#c60b1e', '#ffc400'], pattern: 'simple' },
+            'ITA': { colors: ['#009246', '#ffffff', '#ce2b37'], pattern: 'vertical' },
+            'ZAF': { colors: ['#007a4d', '#ffb612', '#de3831'], pattern: 'simple' }
+        };
+
+        return backgrounds[countryCode] || { colors: ['#e8f4f8', '#d4e9f2', '#c1dfe9'], pattern: 'simple' };
+    }
+
+    // Get issuing country code
+    const countryCode = country_code_txt.value.toUpperCase() || 'USA';
+    const bgConfig = getCountryBackground(countryCode);
+
+    // Create country-specific gradient background
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#e8f4f8');
-    gradient.addColorStop(0.5, '#d4e9f2');
-    gradient.addColorStop(1, '#c1dfe9');
+
+    if (bgConfig.pattern === 'vertical') {
+        // Vertical stripes
+        bgConfig.colors.forEach((color, i) => {
+            const pos = i / (bgConfig.colors.length - 1);
+            gradient.addColorStop(pos, color + '40'); // 40 = 25% opacity
+        });
+    } else if (bgConfig.pattern === 'horizontal') {
+        // Horizontal bands
+        bgConfig.colors.forEach((color, i) => {
+            const pos = i / (bgConfig.colors.length - 1);
+            gradient.addColorStop(pos, color + '40');
+        });
+    } else {
+        // Simple gradient with country colors
+        bgConfig.colors.forEach((color, i) => {
+            const pos = i / (bgConfig.colors.length - 1);
+            gradient.addColorStop(pos, color + '30'); // 30 = 19% opacity
+        });
+    }
+
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw decorative pattern
+    // Draw decorative pattern with country color
     ctx.save();
     ctx.globalAlpha = 0.05;
+    const mainColor = bgConfig.colors[0];
     for (let i = 0; i < 50; i++) {
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
         const size = Math.random() * 60 + 20;
-        ctx.fillStyle = '#4a90a4';
+        ctx.fillStyle = mainColor;
         ctx.beginPath();
         ctx.arc(x, y, size, 0, Math.PI * 2);
         ctx.fill();
@@ -277,11 +323,59 @@ function drawImage() {
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 10;
 
-    // Document background
-    ctx.fillStyle = '#ffffff';
+    // Document background - clean base
+    ctx.fillStyle = '#f8f9fa';
     ctx.beginPath();
     ctx.roundRect(docMargin, docMargin, docWidth, docHeight, cornerRadius);
     ctx.fill();
+
+    // Add realistic security pattern - guilloche-like lines
+    ctx.save();
+    ctx.globalAlpha = 0.04;
+    ctx.strokeStyle = bgConfig.colors[0];
+    ctx.lineWidth = 0.5;
+
+    // Draw wave patterns (like real passport security features)
+    for (let y = docMargin; y < docMargin + docHeight; y += 8) {
+        ctx.beginPath();
+        ctx.moveTo(docMargin, y);
+        for (let x = docMargin; x < docMargin + docWidth; x += 10) {
+            const wave = Math.sin((x - docMargin) * 0.05) * 3;
+            ctx.lineTo(x, y + wave);
+        }
+        ctx.stroke();
+    }
+    ctx.restore();
+
+    // Add subtle microprinting effect (small repeated text pattern)
+    ctx.save();
+    ctx.globalAlpha = 0.015;
+    ctx.fillStyle = bgConfig.colors[0];
+    ctx.font = '4px Arial';
+    const microText = countryCode;
+    for (let y = docMargin + 10; y < docMargin + docHeight - 10; y += 8) {
+        for (let x = docMargin + 10; x < docMargin + docWidth - 10; x += 30) {
+            ctx.fillText(microText, x, y);
+        }
+    }
+    ctx.restore();
+
+    // Add corner security elements (like real passports)
+    ctx.save();
+    ctx.globalAlpha = 0.05;
+    ctx.strokeStyle = bgConfig.colors[0];
+    ctx.lineWidth = 1;
+
+    // Top-left corner pattern
+    for (let i = 0; i < 5; i++) {
+        ctx.strokeRect(docMargin + 10 + i * 3, docMargin + 10 + i * 3, 30 - i * 6, 30 - i * 6);
+    }
+
+    // Top-right corner pattern
+    for (let i = 0; i < 5; i++) {
+        ctx.strokeRect(docMargin + docWidth - 40 + i * 3, docMargin + 10 + i * 3, 30 - i * 6, 30 - i * 6);
+    }
+    ctx.restore();
 
     // Reset shadow
     ctx.shadowColor = 'transparent';
@@ -289,8 +383,8 @@ function drawImage() {
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
 
-    // Draw subtle border
-    ctx.strokeStyle = '#b0c4de';
+    // Draw subtle border with country color
+    ctx.strokeStyle = bgConfig.colors[0] + '30'; // Country color at 19% opacity
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.roundRect(docMargin, docMargin, docWidth, docHeight, cornerRadius);
