@@ -77,3 +77,6 @@ MIT License
 ---
 
 **Note**: This tool generates sample/test MRZ codes only. Generated documents are for testing and educational purposes and should not be used for any official or fraudulent purposes.
+
+## Blog
+[How to Build a Chrome Extension for MRZ Generation from Scratch](https://www.dynamsoft.com/codepool/chrome-extension-mrz-generator.html)
