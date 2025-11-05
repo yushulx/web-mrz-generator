@@ -2,6 +2,8 @@
 
 Generate Machine Readable Zone (MRZ) codes for travel documents directly in your browser.
 
+https://github.com/user-attachments/assets/d34cdca7-2968-46a3-a32d-0fbb2a17303a
+
 ## Features
 
 ✅ **5 Document Types Supported:**
