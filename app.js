@@ -250,7 +250,7 @@ function drawImage() {
             'CAN': { colors: ['#ff0000', '#ffffff'], pattern: 'simple' },
             'GBR': { colors: ['#012169', '#C8102E', '#ffffff'], pattern: 'union' },
             'FRA': { colors: ['#0055a4', '#ffffff', '#ef4135'], pattern: 'vertical' },
-            'DEU': { colors: ['#000000', '#dd0000', '#ffce00'], pattern: 'horizontal' },
+            'D': { colors: ['#000000', '#dd0000', '#ffce00'], pattern: 'horizontal' },
             'CHN': { colors: ['#de2910', '#ffde00'], pattern: 'simple' },
             'JPN': { colors: ['#bc002d', '#ffffff'], pattern: 'simple' },
             'AUS': { colors: ['#012169', '#ffffff'], pattern: 'simple' },
