@@ -68,13 +68,13 @@ class TD3CodeGenerator extends MRZGenerator {
 
     generate() {
         // Line 1: Document type (1) + Country code (3) + Names (39)
-        const docType = MRZGenerator.pad(this.documentType, 1);
+        const docType = MRZGenerator.pad(this.documentType, 2);
         const country = MRZGenerator.pad(this.countryCode, 3);
 
         const names = this.surname + '<<' + MRZGenerator.formatNames(this.givenNames);
         const namesField = MRZGenerator.pad(names, 39);
 
-        const line1 = docType + '<' + country + namesField;
+        const line1 = docType + country + namesField;
 
         // Line 2: Document number (9) + check digit (1) + nationality (3) + birth date (6) + check digit (1) + sex (1) + expiry date (6) + check digit (1) + optional data (14) + check digit (1)
         const docNum = MRZGenerator.pad(this.documentNumber, 9);
@@ -125,13 +125,13 @@ class TD2CodeGenerator extends MRZGenerator {
 
     generate() {
         // Line 1: Document type (2) + Country code (3) + Names (31)
-        const docType = MRZGenerator.pad(this.documentType, 1);
+        const docType = MRZGenerator.pad(this.documentType, 2);
         const country = MRZGenerator.pad(this.countryCode, 3);
 
         const names = this.surname + '<<' + MRZGenerator.formatNames(this.givenNames);
         const namesField = MRZGenerator.pad(names, 31);
 
-        const line1 = docType + '<' + country + namesField;
+        const line1 = docType + country + namesField;
 
         // Line 2: Document number (9) + check digit (1) + nationality (3) + birth date (6) + check digit (1) + sex (1) + expiry date (6) + check digit (1) + optional data (7) + check digit (1)
         const docNum = MRZGenerator.pad(this.documentNumber, 9);
@@ -179,13 +179,13 @@ class TD1CodeGenerator extends MRZGenerator {
 
     generate() {
         // Line 1: Document type (2) + Country code (3) + Document number (9) + check digit (1) + optional data (15)
-        const docType = MRZGenerator.pad(this.documentType, 1);
+        const docType = MRZGenerator.pad(this.documentType, 2);
         const country = MRZGenerator.pad(this.countryCode, 3);
         const docNum = MRZGenerator.pad(this.documentNumber, 9);
         const docNumCheck = MRZGenerator.calculateCheckDigit(docNum);
         const optional1 = MRZGenerator.pad(this.optionalData1, 15);
 
-        const line1 = docType + '<' + country + docNum + docNumCheck + optional1;
+        const line1 = docType + country + docNum + docNumCheck + optional1;
 
         // Line 2: Birth date (6) + check digit (1) + sex (1) + expiry date (6) + check digit (1) + nationality (3) + optional data (11) + check digit (1)
         const birth = MRZGenerator.pad(this.birthDate, 6);
@@ -236,13 +236,13 @@ class MRVACodeGenerator extends MRZGenerator {
 
     generate() {
         // Line 1: Document type (2) + Country code (3) + Names (39)
-        const docType = MRZGenerator.pad(this.documentType, 1);
+        const docType = MRZGenerator.pad(this.documentType, 2);
         const country = MRZGenerator.pad(this.countryCode, 3);
 
         const names = this.surname + '<<' + MRZGenerator.formatNames(this.givenNames);
         const namesField = MRZGenerator.pad(names, 39);
 
-        const line1 = docType + '<' + country + namesField;
+        const line1 = docType + country + namesField;
 
         // Line 2: Document number (9) + check digit (1) + nationality (3) + birth date (6) + check digit (1) + sex (1) + expiry date (6) + check digit (1) + optional data (16)
         const docNum = MRZGenerator.pad(this.documentNumber, 9);
@@ -288,13 +288,13 @@ class MRVBCodeGenerator extends MRZGenerator {
 
     generate() {
         // Line 1: Document type (2) + Country code (3) + Names (31)
-        const docType = MRZGenerator.pad(this.documentType, 1);
+        const docType = MRZGenerator.pad(this.documentType, 2);
         const country = MRZGenerator.pad(this.countryCode, 3);
 
         const names = this.surname + '<<' + MRZGenerator.formatNames(this.givenNames);
         const namesField = MRZGenerator.pad(names, 31);
 
-        const line1 = docType + '<' + country + namesField;
+        const line1 = docType + country + namesField;
 
         // Line 2: Document number (9) + check digit (1) + nationality (3) + birth date (6) + check digit (1) + sex (1) + expiry date (6) + check digit (1) + optional data (8)
         const docNum = MRZGenerator.pad(this.documentNumber, 9);
