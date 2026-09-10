@@ -232,6 +232,8 @@ function drawImage() {
             'CAN': { colors: ['#ff0000', '#ffffff'], pattern: 'simple' },
             'GBR': { colors: ['#012169', '#C8102E', '#ffffff'], pattern: 'union' },
             'FRA': { colors: ['#0055a4', '#ffffff', '#ef4135'], pattern: 'vertical' },
+            // Germany is encoded as 'D' in the MRZ (ICAO Doc 9303 exception); keep the ISO code as an alias
+            'D': { colors: ['#000000', '#dd0000', '#ffce00'], pattern: 'horizontal' },
             'DEU': { colors: ['#000000', '#dd0000', '#ffce00'], pattern: 'horizontal' },
             'CHN': { colors: ['#de2910', '#ffde00'], pattern: 'simple' },
             'JPN': { colors: ['#bc002d', '#ffffff'], pattern: 'simple' },
@@ -242,7 +244,12 @@ function drawImage() {
             'MEX': { colors: ['#006847', '#ffffff', '#ce1126'], pattern: 'vertical' },
             'ESP': { colors: ['#c60b1e', '#ffc400'], pattern: 'simple' },
             'ITA': { colors: ['#009246', '#ffffff', '#ce2b37'], pattern: 'vertical' },
-            'ZAF': { colors: ['#007a4d', '#ffb612', '#de3831'], pattern: 'simple' }
+            'ZAF': { colors: ['#007a4d', '#ffb612', '#de3831'], pattern: 'simple' },
+            'NLD': { colors: ['#ae1c28', '#ffffff', '#21468b'], pattern: 'horizontal' },
+            'SWE': { colors: ['#006aa7', '#fecc00'], pattern: 'simple' },
+            'ARG': { colors: ['#74acdf', '#ffffff', '#74acdf'], pattern: 'horizontal' },
+            'BEL': { colors: ['#000000', '#fdda24', '#ef3340'], pattern: 'vertical' },
+            'CHE': { colors: ['#da291c', '#ffffff'], pattern: 'simple' }
         };
 
         return backgrounds[countryCode] || { colors: ['#e8f4f8', '#d4e9f2', '#c1dfe9'], pattern: 'simple' };

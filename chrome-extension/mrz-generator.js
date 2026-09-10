@@ -46,6 +46,19 @@ class MRZGenerator {
     static formatNames(names) {
         return names.toUpperCase().replace(/ /g, '<');
     }
+
+    /**
+     * Normalize issuing state / nationality codes to the values used in the MRZ.
+     * ICAO Doc 9303 uses a few codes that differ from ISO 3166-1 alpha-3,
+     * e.g. Germany is encoded as 'D' instead of 'DEU'.
+     * @param {string} code - Country code
+     * @returns {string} - Normalized code
+     */
+    static normalizeCountryCode(code) {
+        const overrides = { 'DEU': 'D' };
+        const upper = (code || '').toUpperCase();
+        return overrides[upper] || upper;
+    }
 }
 
 /**
@@ -55,11 +68,11 @@ class TD3CodeGenerator extends MRZGenerator {
     constructor(documentType, countryCode, surname, givenNames, documentNumber, nationality, birthDate, sex, expiryDate, optionalData) {
         super();
         this.documentType = documentType.toUpperCase() || 'P';
-        this.countryCode = countryCode.toUpperCase() || '';
+        this.countryCode = MRZGenerator.normalizeCountryCode(countryCode);
         this.surname = surname.toUpperCase() || '';
         this.givenNames = givenNames.toUpperCase() || '';
         this.documentNumber = documentNumber.toUpperCase() || '';
-        this.nationality = nationality.toUpperCase() || '';
+        this.nationality = MRZGenerator.normalizeCountryCode(nationality);
         this.birthDate = birthDate || '';
         this.sex = sex.toUpperCase() || '';
         this.expiryDate = expiryDate || '';
@@ -68,13 +81,13 @@ class TD3CodeGenerator extends MRZGenerator {
 
     generate() {
         // Line 1: Document type (1) + Country code (3) + Names (39)
-        const docType = MRZGenerator.pad(this.documentType, 1);
+        const docType = MRZGenerator.pad(this.documentType, 2);
         const country = MRZGenerator.pad(this.countryCode, 3);
 
         const names = this.surname + '<<' + MRZGenerator.formatNames(this.givenNames);
         const namesField = MRZGenerator.pad(names, 39);
 
-        const line1 = docType + '<' + country + namesField;
+        const line1 = docType + country + namesField;
 
         // Line 2: Document number (9) + check digit (1) + nationality (3) + birth date (6) + check digit (1) + sex (1) + expiry date (6) + check digit (1) + optional data (14) + check digit (1)
         const docNum = MRZGenerator.pad(this.documentNumber, 9);
@@ -90,10 +103,11 @@ class TD3CodeGenerator extends MRZGenerator {
 
         const optional = MRZGenerator.pad(this.optionalData, 14);
 
-        // Composite check digit calculation
-        const compositeData = docNum + docNumCheck + birth + birthCheck + expiry + expiryCheck + optional;
-        const compositeCheck = MRZGenerator.calculateCheckDigit(compositeData);
+        // Composite check digit: document number, birth date, expiry date and optional
+        // data, each followed by its own check digit (ICAO Doc 9303-4)
         const optionalCheck = MRZGenerator.calculateCheckDigit(optional);
+        const compositeData = docNum + docNumCheck + birth + birthCheck + expiry + expiryCheck + optional + optionalCheck;
+        const compositeCheck = MRZGenerator.calculateCheckDigit(compositeData);
 
         const line2 = docNum + docNumCheck + nat + birth + birthCheck + sexField + expiry + expiryCheck + optional + optionalCheck + compositeCheck;
 
@@ -112,11 +126,11 @@ class TD2CodeGenerator extends MRZGenerator {
     constructor(documentType, countryCode, surname, givenNames, documentNumber, nationality, birthDate, sex, expiryDate, optionalData) {
         super();
         this.documentType = documentType.toUpperCase() || 'I';
-        this.countryCode = countryCode.toUpperCase() || '';
+        this.countryCode = MRZGenerator.normalizeCountryCode(countryCode);
         this.surname = surname.toUpperCase() || '';
         this.givenNames = givenNames.toUpperCase() || '';
         this.documentNumber = documentNumber.toUpperCase() || '';
-        this.nationality = nationality.toUpperCase() || '';
+        this.nationality = MRZGenerator.normalizeCountryCode(nationality);
         this.birthDate = birthDate || '';
         this.sex = sex.toUpperCase() || '';
         this.expiryDate = expiryDate || '';
@@ -125,13 +139,13 @@ class TD2CodeGenerator extends MRZGenerator {
 
     generate() {
         // Line 1: Document type (2) + Country code (3) + Names (31)
-        const docType = MRZGenerator.pad(this.documentType, 1);
+        const docType = MRZGenerator.pad(this.documentType, 2);
         const country = MRZGenerator.pad(this.countryCode, 3);
 
         const names = this.surname + '<<' + MRZGenerator.formatNames(this.givenNames);
         const namesField = MRZGenerator.pad(names, 31);
 
-        const line1 = docType + '<' + country + namesField;
+        const line1 = docType + country + namesField;
 
         // Line 2: Document number (9) + check digit (1) + nationality (3) + birth date (6) + check digit (1) + sex (1) + expiry date (6) + check digit (1) + optional data (7) + check digit (1)
         const docNum = MRZGenerator.pad(this.documentNumber, 9);
@@ -165,12 +179,12 @@ class TD1CodeGenerator extends MRZGenerator {
     constructor(documentType, countryCode, documentNumber, birthDate, sex, expiryDate, nationality, surname, givenNames, optionalData1, optionalData2) {
         super();
         this.documentType = documentType.toUpperCase() || 'I';
-        this.countryCode = countryCode.toUpperCase() || '';
+        this.countryCode = MRZGenerator.normalizeCountryCode(countryCode);
         this.documentNumber = documentNumber.toUpperCase() || '';
         this.birthDate = birthDate || '';
         this.sex = sex.toUpperCase() || '';
         this.expiryDate = expiryDate || '';
-        this.nationality = nationality.toUpperCase() || '';
+        this.nationality = MRZGenerator.normalizeCountryCode(nationality);
         this.surname = surname.toUpperCase() || '';
         this.givenNames = givenNames.toUpperCase() || '';
         this.optionalData1 = optionalData1 ? optionalData1.toUpperCase() : '';
@@ -179,13 +193,13 @@ class TD1CodeGenerator extends MRZGenerator {
 
     generate() {
         // Line 1: Document type (2) + Country code (3) + Document number (9) + check digit (1) + optional data (15)
-        const docType = MRZGenerator.pad(this.documentType, 1);
+        const docType = MRZGenerator.pad(this.documentType, 2);
         const country = MRZGenerator.pad(this.countryCode, 3);
         const docNum = MRZGenerator.pad(this.documentNumber, 9);
         const docNumCheck = MRZGenerator.calculateCheckDigit(docNum);
         const optional1 = MRZGenerator.pad(this.optionalData1, 15);
 
-        const line1 = docType + '<' + country + docNum + docNumCheck + optional1;
+        const line1 = docType + country + docNum + docNumCheck + optional1;
 
         // Line 2: Birth date (6) + check digit (1) + sex (1) + expiry date (6) + check digit (1) + nationality (3) + optional data (11) + check digit (1)
         const birth = MRZGenerator.pad(this.birthDate, 6);
@@ -223,11 +237,11 @@ class MRVACodeGenerator extends MRZGenerator {
     constructor(documentType, countryCode, surname, givenNames, documentNumber, nationality, birthDate, sex, expiryDate, optionalData) {
         super();
         this.documentType = documentType.toUpperCase() || 'V';
-        this.countryCode = countryCode.toUpperCase() || '';
+        this.countryCode = MRZGenerator.normalizeCountryCode(countryCode);
         this.surname = surname.toUpperCase() || '';
         this.givenNames = givenNames.toUpperCase() || '';
         this.documentNumber = documentNumber.toUpperCase() || '';
-        this.nationality = nationality.toUpperCase() || '';
+        this.nationality = MRZGenerator.normalizeCountryCode(nationality);
         this.birthDate = birthDate || '';
         this.sex = sex.toUpperCase() || '';
         this.expiryDate = expiryDate || '';
@@ -236,13 +250,13 @@ class MRVACodeGenerator extends MRZGenerator {
 
     generate() {
         // Line 1: Document type (2) + Country code (3) + Names (39)
-        const docType = MRZGenerator.pad(this.documentType, 1);
+        const docType = MRZGenerator.pad(this.documentType, 2);
         const country = MRZGenerator.pad(this.countryCode, 3);
 
         const names = this.surname + '<<' + MRZGenerator.formatNames(this.givenNames);
         const namesField = MRZGenerator.pad(names, 39);
 
-        const line1 = docType + '<' + country + namesField;
+        const line1 = docType + country + namesField;
 
         // Line 2: Document number (9) + check digit (1) + nationality (3) + birth date (6) + check digit (1) + sex (1) + expiry date (6) + check digit (1) + optional data (16)
         const docNum = MRZGenerator.pad(this.documentNumber, 9);
@@ -275,11 +289,11 @@ class MRVBCodeGenerator extends MRZGenerator {
     constructor(documentType, countryCode, surname, givenNames, documentNumber, nationality, birthDate, sex, expiryDate, optionalData) {
         super();
         this.documentType = documentType.toUpperCase() || 'V';
-        this.countryCode = countryCode.toUpperCase() || '';
+        this.countryCode = MRZGenerator.normalizeCountryCode(countryCode);
         this.surname = surname.toUpperCase() || '';
         this.givenNames = givenNames.toUpperCase() || '';
         this.documentNumber = documentNumber.toUpperCase() || '';
-        this.nationality = nationality.toUpperCase() || '';
+        this.nationality = MRZGenerator.normalizeCountryCode(nationality);
         this.birthDate = birthDate || '';
         this.sex = sex.toUpperCase() || '';
         this.expiryDate = expiryDate || '';
@@ -288,13 +302,13 @@ class MRVBCodeGenerator extends MRZGenerator {
 
     generate() {
         // Line 1: Document type (2) + Country code (3) + Names (31)
-        const docType = MRZGenerator.pad(this.documentType, 1);
+        const docType = MRZGenerator.pad(this.documentType, 2);
         const country = MRZGenerator.pad(this.countryCode, 3);
 
         const names = this.surname + '<<' + MRZGenerator.formatNames(this.givenNames);
         const namesField = MRZGenerator.pad(names, 31);
 
-        const line1 = docType + '<' + country + namesField;
+        const line1 = docType + country + namesField;
 
         // Line 2: Document number (9) + check digit (1) + nationality (3) + birth date (6) + check digit (1) + sex (1) + expiry date (6) + check digit (1) + optional data (8)
         const docNum = MRZGenerator.pad(this.documentNumber, 9);

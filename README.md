@@ -81,6 +81,11 @@ const idCard = new TD1CodeGenerator(
 console.log(idCard.toString());
 ```
 
+### Document Type and Country Codes
+
+- **Document type** is a two-character field: `P<` for ordinary passports, `PD`/`PS`/`PO` for diplomatic, service or official passports, `ID`/`I<` for ID cards, `IP` for passport cards, `V<` for visas. A single character is padded with `<` automatically.
+- **Country codes** follow ICAO Doc 9303, which uses a few codes that differ from ISO 3166-1 alpha-3. Germany is encoded as `D` instead of `DEU`; the generator normalizes `DEU` to `D` for both the issuing state and the nationality field.
+
 ## Browser Compatibility
 
 Works in all modern browsers that support:
